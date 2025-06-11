@@ -1,0 +1,6 @@
+requests
+beautifulsoup4
+praw
+pinterest-api
+aiohttp
+asyncio
