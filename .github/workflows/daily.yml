@@ -2,8 +2,8 @@ name: Run All AI Agents
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # كل يوم الساعة 00:00 UTC
-  workflow_dispatch:      # لتشغيله يدويًا أيضًا
+    - cron: "0 0 * * *"  # تشغيل يومي الساعة 00:00 UTC
+  workflow_dispatch:      # لتشغيله يدويًا من GitHub
 
 jobs:
   run-agents:
@@ -13,21 +13,19 @@ jobs:
       - name: 🧾 Checkout repository with submodules
         uses: actions/checkout@v4
         with:
-          submodules: 'true'    # جلب جميع المستودعات الفرعية (submodules)
-          fetch-depth: 0        # تحميل كامل لتفادي مشاكل fetch
+          submodules: 'true'
+          fetch-depth: 0
 
       - name: 🐍 Set up Python 3.11
         uses: actions/setup-python@v5
         with:
-          python-version: "3.11"
+          python-version: '3.11'
 
       - name: 🔧 Install dependencies
         run: |
           pip install -r requirements.txt || true
 
-      - name: 🧪 Debug: List project files and folders
-        run: |
-          ls -R
+      
 
       - name: 🚀 Run main.py in root folder
         env:
@@ -41,8 +39,8 @@ jobs:
           for dir in subfile subfile2 subfile3 subfile4 subfile5; do
             if [ -f "$dir/main.py" ]; then
               echo "Running $dir/main.py"
-              python "$dir/main.py" || echo "Failed to run $dir/main.py"
+              python "$dir/main.py" || echo "❌ Failed to run $dir/main.py"
             else
-              echo "$dir/main.py not found!"
+              echo "⚠️ $dir/main.py not found!"
             fi
           done
