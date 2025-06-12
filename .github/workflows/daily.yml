@@ -25,10 +25,13 @@ jobs:
           pip install -r requirements.txt || true
 
       - name: 🚀 Run central main.py
-        run: |
-          python main.py
+        env:
+          TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
+        run: python main.py
 
       - name: 🚀 Run all submodules main.py files
+        env:
+          TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
         run: |
           python subfile/main.py || true
           python subfile2/main.py || true
