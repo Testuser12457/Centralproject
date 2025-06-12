@@ -2,8 +2,8 @@ name: Run All AI Agents
 
 on:
   schedule:
-    - cron: "0 0 * * *"  # كل يوم الساعة 00:00 UTC
-  workflow_dispatch:      # لتشغيله يدويًا أيضًا
+    - cron: "0 0 * * *"
+  workflow_dispatch:
 
 jobs:
   run-agents:
@@ -13,20 +13,29 @@ jobs:
       - name: 🧾 Checkout with submodules
         uses: actions/checkout@v4
         with:
-          submodules: recursive      # يجلب كل المستودعات الفرعية
-          fetch-depth: 0             # مهم جدًا لجلب ملفات submodules بالكامل
+          submodules: recursive
+          fetch-depth: 0
+          # token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # استخدمه لو المستودعات خاصة
 
       - name: 🐍 Set up Python
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
-      - name: 🔧 Install dependencies (اختياري)
-        run: |
-          pip install -r requirements.txt || true
+      - name: 🔧 Install dependencies
+        run: pip install -r requirements.txt || true
 
       - name: 🧪 Check folder structure (debug)
         run: ls -R
+
+      - name: List submodules folders
+        run: |
+          ls -la
+          ls -la subfile || echo "subfile missing"
+          ls -la subfile2 || echo "subfile2 missing"
+          ls -la subfile3 || echo "subfile3 missing"
+          ls -la subfile4 || echo "subfile4 missing"
+          ls -la subfile5 || echo "subfile5 missing"
 
       - name: 🚀 Run central main.py
         env:
