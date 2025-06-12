@@ -2,52 +2,94 @@ name: Run All AI Agents
 
 on:
   schedule:
-    - cron: "0 0 * * *"
-  workflow_dispatch:
+    - cron: "0 0 * * *"  # كل يوم الساعة 00:00 UTC
+  workflow_dispatch:      # لتشغيله يدويًا أيضًا
 
 jobs:
   run-agents:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 🧾 Checkout with submodules
+      - name: 🧾 Checkout repository with submodules
         uses: actions/checkout@v4
         with:
-          submodules: recursive
-          fetch-depth: 0
-          # token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # استخدمه لو المستودعات خاصة
+          submodules: 'true'    # جلب جميع المستودعات الفرعية (submodules)
+          fetch-depth: 0        # تحميل كامل لتفادي مشاكل fetch
 
-      - name: 🐍 Set up Python
+      - name: 🐍 Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: "3.11"
 
       - name: 🔧 Install dependencies
-        run: pip install -r requirements.txt || true
-
-      - name: 🧪 Check folder structure (debug)
-        run: ls -R
-
-      - name: List submodules folders
         run: |
-          ls -la
-          ls -la subfile || echo "subfile missing"
-          ls -la subfile2 || echo "subfile2 missing"
-          ls -la subfile3 || echo "subfile3 missing"
-          ls -la subfile4 || echo "subfile4 missing"
-          ls -la subfile5 || echo "subfile5 missing"
+          pip install -r requirements.txt || true
 
-      - name: 🚀 Run central main.py
+      - name: 🧪 Debug: List project files and folders
+        run: |
+          ls -R
+
+      - name: 🚀 Run main.py in root folder
         env:
           TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
         run: python main.py
 
-      - name: 🚀 Run all submodules main.py files
+      - name: 🚀 Run main.py from each submodule folder
         env:
           TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
         run: |
-          python subfile/main.py || true
-          python subfile2/main.py || true
-          python subfile3/main.py || true
-          python subfile4/main.py || true
-          python subfile5/main.py || true
+          for dir in subfile subfile2 subfile3 subfile4 subfile5; do
+            if [ -f "$dir/main.py" ]; then
+              echo "Running $dir/main.py"
+              python "$dir/main.py" || echo "Failed to run $dir/main.py"
+            else
+              echo "$dir/main.py not found!"
+            fi
+          donename: Run All AI Agents
+
+on:
+  schedule:
+    - cron: "0 0 * * *"  # كل يوم الساعة 00:00 UTC
+  workflow_dispatch:      # لتشغيله يدويًا أيضًا
+
+jobs:
+  run-agents:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 🧾 Checkout repository with submodules
+        uses: actions/checkout@v4
+        with:
+          submodules: 'true'    # جلب جميع المستودعات الفرعية (submodules)
+          fetch-depth: 0        # تحميل كامل لتفادي مشاكل fetch
+
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: 🔧 Install dependencies
+        run: |
+          pip install -r requirements.txt || true
+
+      - name: 🧪 Debug: List project files and folders
+        run: |
+          ls -R
+
+      - name: 🚀 Run main.py in root folder
+        env:
+          TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
+        run: python main.py
+
+      - name: 🚀 Run main.py from each submodule folder
+        env:
+          TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
+        run: |
+          for dir in subfile subfile2 subfile3 subfile4 subfile5; do
+            if [ -f "$dir/main.py" ]; then
+              echo "Running $dir/main.py"
+              python "$dir/main.py" || echo "Failed to run $dir/main.py"
+            else
+              echo "$dir/main.py not found!"
+            fi
+          done
