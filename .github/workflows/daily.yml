@@ -1,46 +1,24 @@
-name: Run All AI Agents
+name: Run All agents
 
 on:
+  workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"  # تشغيل يومي الساعة 00:00 UTC
-  workflow_dispatch:      # لتشغيله يدويًا من GitHub
+    - cron: "0 0 * * *"  # يومياً منتصف الليل بتوقيت UTC
 
 jobs:
-  run-agents:
+  run-main:
     runs-on: ubuntu-latest
-
     steps:
-      - name: 🧾 Checkout repository with submodules
-        uses: actions/checkout@v4
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
         with:
-          submodules: 'true'
-          fetch-depth: 0
+          python-version: 3.10
 
-      - name: 🐍 Set up Python 3.11
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.11'
+      - name: Install dependencies
+        run: pip install -r requirements.txt
 
-      - name: 🔧 Install dependencies
-        run: |
-          pip install -r requirements.txt || true
-
-      
-
-      - name: 🚀 Run main.py in root folder
-        env:
-          TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
+      - name: Run main.py
         run: python main.py
-
-      - name: 🚀 Run main.py from each submodule folder
-        env:
-          TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
-        run: |
-          for dir in subfile subfile2 subfile3 subfile4 subfile5; do
-            if [ -f "$dir/main.py" ]; then
-              echo "Running $dir/main.py"
-              python "$dir/main.py" || echo "❌ Failed to run $dir/main.py"
-            else
-              echo "⚠️ $dir/main.py not found!"
-            fi
-          done
