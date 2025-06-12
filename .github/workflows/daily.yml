@@ -1,27 +1,29 @@
-name: Run All agents
+name: Run All AI Agents
 
 on:
-  workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"
+    - cron: "0 0 * * *"  # تشغيل يومي الساعة 00:00 UTC
+  workflow_dispatch:      # لتشغيله يدويًا من GitHub
 
 jobs:
-  run-main:
+  run-agents:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v3
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      - name: 🧾 Checkout repository
+        uses: actions/checkout@v4
         with:
-          python-version: 3.10  # ✅ استخدم إصدار مدعوم
+          fetch-depth: 0
 
-      - name: Install dependencies
+      - name: 🐍 Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: 🔧 Install dependencies
         run: pip install -r requirements.txt
-
-      - name: Run main script
+      
+      - name: 🚀 Run main.py
         env:
           TOKENS_JSON: ${{ secrets.TOKENS_JSON }}
         run: python main.py
