@@ -3,7 +3,7 @@ name: Run All agents
 on:
   workflow_dispatch:
   schedule:
-    - cron: "0 0 * * *"  # يوميًا في منتصف الليل بتوقيت UTC
+    - cron: "0 0 * * *"
 
 jobs:
   run-main:
@@ -16,7 +16,7 @@ jobs:
       - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: 3.10
+          python-version: 3.10  # ✅ استخدم إصدار مدعوم
 
       - name: Install dependencies
         run: pip install -r requirements.txt
